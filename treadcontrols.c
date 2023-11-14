@@ -34,7 +34,8 @@ void moveTreads(JoystickValues &js, ButtonValues &buttons)
   // Check this before checking if yIsDeead to stop moving, because
   // we may still be moving in precision mode.
   //
-  // We can only enter or leave precision mode when not moving.
+  // We can only enter or leave precision mode when all axes are
+  // dead.
   if (xIsDead && yIsDead && yRightIsDead)
   {
     isPrecision = buttons.L1;
@@ -43,37 +44,58 @@ void moveTreads(JoystickValues &js, ButtonValues &buttons)
     isMoving = false;
   }
 
-  // If stationary on one axis, stop acting on that axis
+  // We are never turning if the x axis is dead.
   if (xIsDead)
   {
     isTurning = false;
   }
-  if (yIsDead && !isPrecision)
+
+  // Precision mode cannot set isTurning, but can set or clear isMoving
+  if (isPrecision)
   {
-    isMoving = false;
+    // Entering precision mode counts on xIsDead too, so doesn't cover
+    // this check.
+    if (yIsDead && yRightIsDead)
+    {
+      isMoving = false;
+    }
+    // In precision mode, if we're not dead, move the treads as per
+    // separate y axes.
+    if (!(yIsDead && yRightIsDead))
+    {
+      leftTread = js.LeftY;
+      rightTread = js.RightY;
+      isMoving = true;
+    }
+  }
+  else
+  {
+    if (yIsDead)
+    {
+      isMoving = false;
+    }
+    // If not moving and attempting to turn, turn.
+    if (!(isMoving || xIsDead))
+    {
+      // Turning right drives the left tread forward, the right tread backward,
+      // and vice versa.
+      leftTread = -js.RightX;
+      rightTread = js.RightX;
+      // Flag that we're turning.
+      isTurning = true;
+    }
+    // If not turning and attempting to move, move
+    else if (!(isTurning || yIsDead))
+    {
+      leftTread = rightTread = js.LeftY;
+      isMoving = true;
+    }
   }
 
   // Stop if it's neither moving nor turning
   if (!(isMoving || isTurning))
   {
     leftTread = rightTread = 0;
-  }
-
-  // If not moving and attempting to turn, turn.
-  if (!(isMoving || xIsDead))
-  {
-    // Turning right drives the left tread forward, the right tread backward,
-    // and vice versa.
-    leftTread = -js.RightX;
-    rightTread = js.RightX;
-    // Flag that we're turning.
-    isTurning = true;
-  }
-  // If not turning and attempting to move, move
-  else if (!(isTurning || yIsDead))
-  {
-    leftTread = rightTread = js.LeftY;
-    isMoving = true;
   }
 
   // Set the motors
