@@ -14,6 +14,12 @@
  * stick attached to that action must return to 0 before the other stick will
  * be examined.  This allows a driver to buffer inputs, but that can do
  * unexpected things.
+ *
+ * Precision mode activates when left Y and right stick are dead, and L1 is
+ * held.  Precision mode stays until left Y and right stick are dead and
+ * L1 is released.  Releasing L1 while the sticks aren't dead doesn't exit
+ * precision mode, and pressing L1 while the sticks aren't dead doesn't
+ * enter precision mode.
  */
 
 // Flags to track if the robot is already moving or turning.
@@ -26,7 +32,7 @@ void moveTreads(JoystickValues &js, ButtonValues &buttons)
   // Dead zone sets axis to 0
   bool xIsDead = (js.RightX == 0);
   bool yIsDead = (js.LeftY == 0);
-  bool yRightIsDead = jRightY;
+  bool yRightIsDead = (js.RightY == 0);
   signed char leftTread;
   signed char rightTread;
 
@@ -79,8 +85,8 @@ void moveTreads(JoystickValues &js, ButtonValues &buttons)
     {
       // Turning right drives the left tread forward, the right tread backward,
       // and vice versa.
-      leftTread = -js.RightX;
-      rightTread = js.RightX;
+      leftTread = js.RightX;
+      rightTread = -js.RightX;
       // Flag that we're turning.
       isTurning = true;
     }

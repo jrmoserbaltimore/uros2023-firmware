@@ -35,8 +35,8 @@ void getJoystickValues(JoystickValues &js)
 
 void getButtonValues(ButtonValues &buttons)
 {
-  buttons.R1 = vexRT[Btn6U];
-  buttons.R2 = vexRT[Btn6D];
-  buttons.L1 = vexRT[Btn5U];
-  buttons.L2 = vexRT[Btn6D];
+  buttons.R1 = (vexRT[Btn6U] != 0);
+  buttons.R2 = (vexRT[Btn6D] != 0);
+  buttons.L1 = (vexRT[Btn5U] != 0);
+  buttons.L2 = (vexRT[Btn6D] != 0);
 }
