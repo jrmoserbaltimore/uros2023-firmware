@@ -8,7 +8,7 @@
 #include "inputs.c"
 #include "treadcontrols.c"
 
-#define ScoopSpeed 127
+//#define SCOOP_MOTOR true
 
 task main()
 {
@@ -20,11 +20,20 @@ task main()
     sleep(5);
     getJoystickValues(js);
     getButtonValues(buttons);
+#ifdef SCOOP_MOTOR
     // FIXME:  Kludge to move the scoop
-    //motor[Scoop] = buttons.R1 ? ScoopSpeed : buttons.R2 ? -ScoopSpeed : 0;
+#define ScoopSpeed 48
+    motor[Scoop] = buttons.R1 ? ScoopSpeed : buttons.R2 ? -ScoopSpeed : 0;
+#endif
+#ifndef SCOOP_MOTOR
     // Move servo instead of motor
-    scoopPosition += (buttons.R1 && scoopPosition < 127) ? 1 : (buttons.R2 && scoopPosition > -127) ? -1  : 0;
+#define SERVO_SPEED 1
+#define SERVO_SPEED_FAST 4
+    signed char servoSpeed = buttons.Y ? SERVO_SPEED_FAST : SERVO_SPEED;
+    scoopPosition += (buttons.R1 && scoopPosition < 127) ? servoSpeed
+                   : (buttons.R2 && scoopPosition > -127) ? -servoSpeed : 0;
     motor[Servo1] = scoopPosition;
+#endif
     // TODO:  if (treadMode) move treads, if (scoopMode) move scoop
     moveTreads(js, buttons);
   }

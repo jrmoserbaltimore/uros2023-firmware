@@ -7,10 +7,10 @@ typedef struct {
 } JoystickValues;
 
 typedef struct {
-  bool R1;
-  bool R2;
-  bool L1;
-  bool L2;
+  // Shoulder buttons
+  bool R1, R2, L1, L2;
+  // Right face buttons
+  bool A, B, X, Y;
 } ButtonValues;
 
 

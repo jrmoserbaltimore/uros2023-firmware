@@ -39,4 +39,8 @@ void getButtonValues(ButtonValues &buttons)
   buttons.R2 = (vexRT[Btn6D] != 0);
   buttons.L1 = (vexRT[Btn5U] != 0);
   buttons.L2 = (vexRT[Btn6D] != 0);
+  buttons.A  = (vexRT[Btn8R] != 0);
+  buttons.B  = (vexRT[Btn8D] != 0);
+  buttons.X  = (vexRT[Btn8U] != 0);
+  buttons.Y  = (vexRT[Btn8L] != 0);
 }
